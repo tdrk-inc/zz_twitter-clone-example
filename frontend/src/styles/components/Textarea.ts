@@ -6,12 +6,16 @@ import {
 
 const content = defineStyle<TextareaProps>({
   resize: "none",
-  overflowY: "hidden",
-  rounded: 0,
-  h: 32,
-  p: 4,
+  overflowY: "auto",
+  rounded: "md",
+  p: 2,
+  fontSize: "lg",
   _focus: {
     boxShadow: "none",
+    outline: "none",
+  },
+  _placeholder: {
+    color: "gray.400",
   },
 });
 

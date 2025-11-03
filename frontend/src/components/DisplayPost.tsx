@@ -1,5 +1,6 @@
 import { DisplayPostFragment } from "@/apollo/graphql";
 import {
+  Avatar,
   chakra,
   HStack,
   Icon,
@@ -12,7 +13,7 @@ import { MdOutlineEdit } from "react-icons/md";
 import { UpdatePostModal } from "./UpdatePostModal";
 import { useContext } from "react";
 import { AccountContext } from "@/providers/AccountProvider";
-import { FiTrash } from "react-icons/fi";
+import { FiTrash, FiTrash2 } from "react-icons/fi";
 import { RemovePostAlert } from "./RemovePostAlert";
 
 type Props = {
@@ -35,16 +36,33 @@ export function DisplayPost({ post }: Props) {
 
   return (
     <Stack borderBottomWidth="1px" borderBottomColor="glay" pt={4}>
-      <Stack as={Link} href={`/post/${post.id}`} px={4}>
-        <HStack>
-          <Text color="blackAlpha.700">{post.account.name}</Text>
-          <Text color="blackAlpha.700" fontSize="small">
-            @{post.account.id}
-          </Text>
-        </HStack>
-        <Text whiteSpace="pre-wrap">{post.content}</Text>
-      </Stack>
-      <HStack justifyContent="end" spacing={8} px={4}>
+      <HStack
+        as={Link}
+        href={`/post/${post.id}`}
+        px={4}
+        align="start"
+        spacing={3}
+      >
+        <Avatar
+          name={post.account.name}
+          size="sm"
+          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.account.id}`}
+          bg="blue.500"
+          color="white"
+        />
+        <Stack flex={1} spacing={2}>
+          <HStack>
+            <Text color="blackAlpha.700" fontWeight="semibold">
+              {post.account.name}
+            </Text>
+            <Text color="blackAlpha.700" fontSize="small">
+              @{post.account.id}
+            </Text>
+          </HStack>
+          <Text whiteSpace="pre-wrap">{post.content}</Text>
+        </Stack>
+      </HStack>
+      <HStack justifyContent="end" spacing={5} px={6} mb={4}>
         <chakra.button
           color={
             post.account.id === context.accountId ? "black" : "blackAlpha.400"

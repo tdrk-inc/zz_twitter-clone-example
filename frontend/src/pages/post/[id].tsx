@@ -6,13 +6,21 @@ import {
 import { DisplayPost } from "@/components/DisplayPost";
 import { Header } from "@/components/Header";
 import { PostForm } from "@/components/PostForm";
-import { chakra, HStack, Stack, Text, useToast } from "@chakra-ui/react";
+import {
+  Avatar,
+  chakra,
+  HStack,
+  Stack,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 
 export default function Post() {
   const router = useRouter();
   const toast = useToast();
+  const [formKey, setFormKey] = useState(0);
 
   const { data } = useGetPostQuery({
     variables: {
@@ -27,7 +35,7 @@ export default function Post() {
         status: "success",
         duration: 2000,
       });
-      document.getElementsByTagName("textarea")[0].value = "";
+      setFormKey((prev) => prev + 1);
     },
     onError: () => {
       toast({
@@ -52,33 +60,51 @@ export default function Post() {
   };
 
   return (
-    <Stack alignItems="center" h="100vh">
+    <Stack alignItems="center" h="100vh" bg="gray.50">
       <Stack
         w="100%"
         maxW="750px"
         h="100%"
-        boxShadow="0px 0px 100px gray"
+        boxShadow="0px 0px 20px rgba(0, 0, 0, 0.1)"
         spacing={0}
+        bg="white"
       >
         <Header title="投稿" />
-        <Stack p={4}>
-          <HStack>
-            <Text color="blackAlpha.700">{data?.post.account.name}</Text>
+        <HStack
+          p={4}
+          borderBottomWidth="1px"
+          borderColor="gray.200"
+          align="start"
+          spacing={3}
+        >
+          <Avatar
+            name={data?.post.account.name}
+            size="md"
+            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data?.post.account.id}`}
+            bg="blue.500"
+            color="white"
+          />
+          <Stack flex={1} spacing={2}>
+            <HStack>
+              <Text color="blackAlpha.700" fontWeight="semibold">
+                {data?.post.account.name}
+              </Text>
+              <Text color="blackAlpha.700" fontSize="small">
+                @{data?.post.account.id}
+              </Text>
+            </HStack>
+            <Text whiteSpace="pre-wrap">{data?.post.content}</Text>
             <Text color="blackAlpha.700" fontSize="small">
-              @{data?.post.account.id}
+              更新日時: {new Date(data?.post.updatedAt).toLocaleString()}
             </Text>
-          </HStack>
-          <Text whiteSpace="pre-wrap">{data?.post.content}</Text>
-          <Text color="blackAlpha.700" fontSize="small">
-            更新日時: {new Date(data?.post.updatedAt).toLocaleString()}
-          </Text>
-        </Stack>
-        <chakra.form onSubmit={onSubmit}>
-          <PostForm />
-        </chakra.form>
+          </Stack>
+        </HStack>
         {data?.post.relatedPosts?.map((post) => (
           <DisplayPost post={post} key={post.id} />
         ))}
+        <chakra.form onSubmit={onSubmit}>
+          <PostForm key={formKey} isReply={true} />
+        </chakra.form>
       </Stack>
     </Stack>
   );
